@@ -45,6 +45,9 @@ else()
     option(PARTIO_BUILD_SHARED_LIBS "Enabled shared libraries" ON)
 endif()
 
+option(PARTIO_OPENGL_ENABLED "Enable opengl" OFF)
+option(PARTIO_PYTHON_ENABLED "Enable python bindings" OFF)
+
 # Enable C++11
 if (DEFINED ENV{CXXFLAGS_STD})
     set(CXXFLAGS_STD $ENV{CXXFLAGS_STD})
@@ -111,10 +114,14 @@ set(OpenGL_GL_PREFERENCE GLVND)
 
 ## Search for useful libraries
 find_package(Threads REQUIRED)
+if(PARTIO_OPENGL_ENABLED)
 find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
+endif()
+if(PARTIO_PYTHON_ENABLED)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
+endif()
 find_package(ZLIB)
 if (ZLIB_FOUND)
     add_definitions(-DPARTIO_USE_ZLIB)
@@ -135,6 +142,8 @@ endif()
 ## Traverse subdirectories
 add_subdirectory(src/lib)
 add_subdirectory(src/tools)
+if(PARTIO_PYTHON_ENABLED)
 add_subdirectory(src/py)
+endif()
 add_subdirectory(src/tests)
 add_subdirectory(src/doc)

@@ -159,6 +159,15 @@ public:
         :particles(particles),index(index),indexEnd(indexEnd)
     {}
 
+    //! Assignment operator
+    ParticleIterator& operator=(const ParticleIterator& other) {
+        particles=other.particles;
+        index=other.index;
+        indexEnd=other.indexEnd;
+        accessors=0;
+        return *this;
+    }
+
     //! Whether the iterator is valid
     bool valid() const
     {return particles;}
