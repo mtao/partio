@@ -35,6 +35,10 @@ cmake_minimum_required(VERSION 3.15.0)
 project(partio LANGUAGES CXX)
 set(PARTIO_VERSION_MAJOR "1")
 
+option(PARTIO_TOOLS_ENABLED "Enable tools" ON)
+option(PARTIO_PYTHON_ENABLED "Enable python" ON)
+option(PARTIO_DOC_ENABLED "Enable doc" ON)
+
 option(PARTIO_GTEST_ENABLED "Enable GTest for tests" OFF)
 option(PARTIO_ORIGIN_RPATH "Enable ORIGIN rpath in the installed libraries" OFF)
 
@@ -114,14 +118,20 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/${VARIANT_DIRECTORY}")
 endif()
 
+if(PARTIO_TOOLS_ENABLED)
 # Prefer libglvnd for OpenGL
 set(OpenGL_GL_PREFERENCE GLVND)
+endif()
 
 ## Search for useful libraries
 find_package(Threads REQUIRED)
+if(PARTIO_TOOLS_ENABLED)
 find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
+endif()
+if(PARTIO_PYTHON_ENABLED)
 find_package(Python REQUIRED COMPONENTS Interpreter Development)
+endif()
 find_package(ZLIB)
 if (ZLIB_FOUND)
     add_definitions(-DPARTIO_USE_ZLIB)
@@ -134,9 +144,15 @@ set(PARTIO_LIBRARIES partio ${ZLIB_LIBRARY})
 
 ## Traverse subdirectories
 add_subdirectory(src/lib)
+if(PARTIO_TOOLS_ENABLED)
 add_subdirectory(src/tools)
+endif()
+if(PARTIO_PYTHON_ENABLED)
 add_subdirectory(src/py)
+endif()
+if(PARTIO_DOC_ENABLED)
 add_subdirectory(src/doc)
+endif()
 
 if (${PARTIO_GTEST_ENABLED})
     set(GTEST_LOCATION "/usr" CACHE STRING "gtest installation prefix")
